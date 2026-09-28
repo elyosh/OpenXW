@@ -36,6 +36,7 @@
 #include <string.h>
 
 static int initialized, paused, rebase, exit_code, skip_intro;
+static int ever_had_focus;
 static int settings_open, settings_requested;
 static XwSettingsPage settings_page;
 static char startup_options[] = "dinput sfx music voice fullscreen pageflip softwarecursor";
@@ -100,6 +101,7 @@ int XwPort_Init(int cd_music_available) {
 	}
 	initialized = 1;
 	paused = settings_open = settings_requested = 0;
+	ever_had_focus = 0;
 	rebase = 1;
 	g_quitRequested = 0;
 	const AeronInputSnapshot* input = Aeron_InputSnapshot();
@@ -168,13 +170,17 @@ void XwPort_Tick(int32_t delta_us) {
 	XwInput_ApplySettings(input);
 	XwPreferences_ApplyPending();
 	int focused = input && input->has_focus;
-	if (focused && !g_windowActive)
+	if (focused)
+		ever_had_focus = 1;
+	/* Wayland needs a presented frame before the window can receive its first focus. */
+	int active = focused || !ever_had_focus;
+	if (active && !g_windowActive)
 		g_windowReactivated = 1;
-	g_windowActive = focused;
+	g_windowActive = active;
 	char error[1024];
 	if (XwPreferences_ConsumeSaveError(error, sizeof error))
 		XwPort_RequestSettings();
-	if (!focused || settings_open || settings_requested || Aeron_DebugUiVisible()) {
+	if (!active || settings_open || settings_requested || Aeron_DebugUiVisible()) {
 		paused_frame();
 		XwRenderSnapshot_Commit(focused, 1);
 		return;
@@ -183,8 +189,9 @@ void XwPort_Tick(int32_t delta_us) {
 		paused = 0;
 		Aeron_AudioSetPaused(0);
 	}
-	XwPresentation_SetPointerSuppressed(false);
-	int suppress = rebase || XwFlightLoading_Active() || (!XwFrontend_IsActive() && !XwFlightSim_IsActive());
+	XwPresentation_SetPointerSuppressed(!focused);
+	int suppress =
+		!focused || rebase || XwFlightLoading_Active() || (!XwFrontend_IsActive() && !XwFlightSim_IsActive());
 	XwInput_BeginCaptureFrame(input, suppress != 0);
 	AeronCompat_Update(suppress);
 	XwInput_BeginFrame(input, suppress != 0, rebase ? 0 : delta_us);
@@ -242,5 +249,6 @@ void XwPort_Shutdown(void) {
 	XwInput_Reset();
 	XwTime_Reset();
 	initialized = paused = rebase = settings_open = settings_requested = 0;
+	ever_had_focus = 0;
 	Aeron_LogInfo("xw.port", "Runtime stopped (exit %d)", XwPort_GetExitCode());
 }
