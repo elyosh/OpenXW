@@ -1,0 +1,352 @@
+version: 1
+startup:
+  skip_intro: false
+frontend:
+  # Ordinary cutscenes and menus require a restart.
+  version: xw98
+  # frontend, xw94 or xw98; applies when next opening mission selection.
+  # frontend follows the ordinary menu version currently in use.
+  inflight_version: frontend
+
+# xw93, xw94 or xw98; applies at the next mission selection.
+# xw93 uses the graphics and missions from an extracted 1993 B-Wing installation.
+# Each flight mode requires its installation; engine loops additionally require 1998.
+flight:
+  version: xw98
+  # native or unlocked; applies when next opening mission selection.
+  update_rate: unlocked
+paths:
+  installations:
+    xw93: ""
+    xw94: ""
+    xw98: ""
+audio:
+  sb16_filter: true
+  player_engine_sound_volume_percent: 30
+music:
+  arrangement: windows
+  backend: auto
+  soundfont: ""
+  sc55_rom_directory: ""
+  mt32_control: ""
+  mt32_pcm: ""
+ui:
+  font: assets/fonts/menu
+video:
+  window_mode: windowed
+input:
+  mouse_flight: true
+  mouse_mode: classic
+  mouse_sensitivity: 5
+  mouse_invert_y: true
+  # Gameplay defaults use the primary X-Wing shortcuts; Escape opens settings.
+  keyboard:
+    fire_weapon:
+      - {key: "2", modifiers: [alt]}
+    target_roll_modifier:
+      - {key: "3", modifiers: [alt]}
+    cycle_weapon_group:
+      - {key: "W"}
+    cycle_weapon_firing_mode:
+      - {key: "X"}
+    toggle_s_foils:
+      - {key: "F"}
+    cycle_cannon_recharge_rate:
+      - {key: "F9"}
+    cycle_shield_recharge_rate:
+      - {key: "F10"}
+    cycle_shield_mode:
+      - {key: "S"}
+    xfer_shields_to_cannon:
+      - {key: "F9", modifiers: [shift]}
+      - {key: ";"}
+    xfer_cannon_to_shields:
+      - {key: "F10", modifiers: [shift]}
+      - {key: "'"}
+    target_next:
+      - {key: "T"}
+    target_prev:
+      - {key: "Y"}
+    target_nearest_fighter:
+      - {key: "R"}
+    target_my_attacker:
+      - {key: "E"}
+    target_clear:
+      - {key: "O"}
+    identify:
+      - {key: "I"}
+    auto_target:
+      - {key: "U"}
+    target_preset_recall_1:
+      - {key: "F5"}
+    target_preset_store_1:
+      - {key: "F5", modifiers: [shift]}
+    target_preset_recall_2:
+      - {key: "F6"}
+    target_preset_store_2:
+      - {key: "F6", modifiers: [shift]}
+    target_preset_recall_3:
+      - {key: "F7"}
+    target_preset_store_3:
+      - {key: "F7", modifiers: [shift]}
+    target_preset_recall_4:
+      - {key: "F8"}
+    target_preset_store_4:
+      - {key: "F8", modifiers: [shift]}
+    throttle_up:
+      - {key: "="}
+      - {key: "=", modifiers: [shift]}
+    throttle_down:
+      - {key: "-"}
+    throttle_zero:
+      - {key: "\\"}
+    throttle_one_third:
+      - {key: "["}
+    throttle_two_thirds:
+      - {key: "]"}
+    throttle_full:
+      - {key: "Backspace"}
+    match_speed:
+      - {key: "Return"}
+    view_toggle_elevated:
+      - {key: "0"}
+    hold_view_elevated:
+      - {key: "Keypad 0"}
+    view_left_shoulder:
+      - {key: "1"}
+    hold_view_left_shoulder:
+      - {key: "Keypad 1"}
+    view_rear:
+      - {key: "2"}
+    hold_view_rear:
+      - {key: "Keypad 2"}
+    view_right_shoulder:
+      - {key: "3"}
+    hold_view_right_shoulder:
+      - {key: "Keypad 3"}
+    view_left_wing:
+      - {key: "4"}
+    hold_view_left_wing:
+      - {key: "Keypad 4"}
+    view_straight_up:
+      - {key: "5"}
+    hold_view_straight_up:
+      - {key: "Keypad 5"}
+    view_right_wing:
+      - {key: "6"}
+    hold_view_right_wing:
+      - {key: "Keypad 6"}
+    view_left_forward:
+      - {key: "7"}
+    hold_view_left_forward:
+      - {key: "Keypad 7"}
+    view_forward:
+      - {key: "8"}
+    hold_view_forward:
+      - {key: "Keypad 8"}
+    view_right_forward:
+      - {key: "9"}
+    hold_view_right_forward:
+      - {key: "Keypad 9"}
+    view_toggle_cockpit:
+      - {key: "."}
+      - {key: "Keypad ."}
+    view_player:
+      - {key: "F1"}
+    view_warhead:
+      - {key: "F2"}
+    view_external:
+      - {key: "F3"}
+      - {key: "/"}
+      - {key: "Keypad /"}
+    view_manual_camera:
+      - {key: "F4"}
+      - {key: "Keypad *"}
+    info_map:
+      - {key: "M"}
+    info_damage:
+      - {key: "D"}
+    info_briefing:
+      - {key: "B"}
+    replay_record:
+      - {key: "C"}
+    replay_view:
+      - {key: "V"}
+    comm_head_home:
+      - {key: "H", modifiers: [shift]}
+    comm_stop_and_wait:
+      - {key: "W", modifiers: [shift]}
+    comm_continue_mission:
+      - {key: "G", modifiers: [shift]}
+    comm_evade:
+      - {key: "E", modifiers: [shift]}
+    comm_assign_target:
+      - {key: "A", modifiers: [shift]}
+    comm_cover_me:
+      - {key: "C", modifiers: [shift]}
+    comm_ignore_target:
+      - {key: "I", modifiers: [shift]}
+    comm_report_orders:
+      - {key: "R", modifiers: [shift]}
+    hyperspace:
+      - {key: "H"}
+    eject:
+      - {key: "E", modifiers: [alt]}
+    confirm_order:
+      - {key: "Space"}
+    pause:
+      - {key: "P"}
+    escape: []
+    show_version:
+      - {key: "V", modifiers: [alt]}
+    toggle_music:
+      - {key: "M", modifiers: [alt]}
+    toggle_sound:
+      - {key: "S", modifiers: [alt]}
+  controllers: []
+  gamepad_defaults:
+    axes:
+      yaw: {source: leftx, invert: false, deadzone: 0.08}
+      pitch: {source: lefty, invert: false, deadzone: 0.08}
+      roll: {source: rightx, invert: false, deadzone: 0.08}
+      throttle: {source: none, invert: false}
+    buttons:
+      fire_weapon: [south, {axis: righttrigger, direction: positive, threshold: 0.5}]
+      target_roll_modifier: [east, {axis: lefttrigger, direction: positive, threshold: 0.5}]
+      target_nearest_fighter: north
+      target_next: west
+      target_my_attacker: leftshoulder
+      view_toggle_cockpit: rightshoulder
+      throttle_full: dpadup
+      throttle_down: dpaddown
+      match_speed: dpadright
+      target_clear: dpadleft
+      hyperspace: leftstick
+      pause: start
+      escape: back
+      view_forward: rightstick
+presentation:
+  vsync_divisor: 1
+  hdr_output: true
+  sdr_gamma: auto
+  paper_white_nits: auto
+game:
+  starfighter_collision_damage: true
+  player_invulnerable: false
+  unlimited_ammunition: false
+  music_enabled: true
+  sfx_enabled: true
+  music_volume: 16
+  sfx_volume: 16
+  spoken_text_enabled: true
+  transitions_enabled: true
+  digital_sound_enabled: true
+  voice_enabled: true
+  replay_disk_cache_kb: 256
+  replay_disk_cache_enabled: true
+  classic_missions: false
+  high_detail_starfield: true
+  backdrops_enabled: true
+  debris_enabled: true
+  engine_glow_enabled: true
+  starfighter_detail: 12
+  starship_detail: 12
+  death_star_detail: 12
+  interlace_enabled: false
+  # 1998 UI choices: 2 = 640x480 RGB software, 3 = 640x480 hardware.
+  # Legacy YAML values: 0 = 320x200 indexed, 1 = 640x480 indexed.
+  resolution_index: 2
+  engine_sound_enabled: true
+  texture_quality: 1
+  brightness: 2
+  joystick_actions: [156, 157, 114, 46, 101, 105, 91, 8, 13, 93, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+  compatibility:
+    field_15: 1
+    field_40: 1
+    field_44: 1
+    field_48: 0
+    field_4c: 0
+    intro_playback_mode: 0
+    field_5c: 0
+    gap54: [0, 0, 0, 0, 0, 0, 0, 0]
+
+# Flight starts in modern mode. Plain Tab toggles renderers for the current session.
+render:
+  dos:
+    msaa_samples: 2
+  cockpit_undither: true
+  msaa_samples: 2
+  temporal_upscaling:
+    mode: "off"
+    sharpness: 0
+  motion_blur:
+    quality: 2
+    shutter: 0.5
+    camera_blur: true
+    pause_keep_blur: true
+    velocity_viz: false
+    fsr_direct_motion: true
+  # Optional ssao/shadows/tonemap maps override aeron/scene3d_defaults.yaml.
+texture_filtering:
+  anisotropic: true
+  max_anisotropy: 8
+models:
+  smooth_angle_degrees: 90
+  opt_emissive_strength: 2.0
+  opt_projectile_emissive_strength: 5
+  engine_emissive_strength: 2.5
+lighting:
+  intensity: 0.8
+  spec_mul: 1
+  wrap: 0
+  spec_geom_adapt: true
+  ambient_r: 0.08
+  ambient_g: 0.08
+  ambient_b: 0.08
+point_lights:
+  enabled: true
+  clustered: true
+  cluster_depth_slices: 24
+  cluster_debug: false
+  scale: 1
+  range_scale: 1
+  min_distance: 64
+  spec_weight: 1
+  diffuse_wrap: 1
+  contrib_cap: 1
+bloom:
+  intensity: 0.5
+skybox:
+  # Replacement cubemaps are opt-in; the shader starfield is the default.
+  enabled: false
+  mode: "stars"
+  path: "flight/skyboxes/stars.ktx2"
+  exposure: 1
+  star_brightness: 1
+hyperspace_tunnel:
+  travel_speed: 13
+  rotation_speed: -2.3
+  noise_scale: 0.5
+  brightness: 1
+  highlight_strength: 3
+  focal_length: 0.9
+  twist: 0.1
+  cap_radius: 0.001
+  cap_falloff: 30
+  mesh_ambient_strength: 0.7
+  mesh_environment_roughness: 1
+  mesh_key_strength: 0.15
+  dark_color_r: 0
+  dark_color_g: 0
+  dark_color_b: 0
+  body_color_r: 0
+  body_color_g: 0
+  body_color_b: 1
+  highlight_color_r: 0.05
+  highlight_color_g: 0.24
+  highlight_color_b: 0.99
+  cap_color_r: 0.09
+  cap_color_g: 0.28
+  cap_color_b: 1
+effects:
+  explosion_genus_emissive_strength: 2.5

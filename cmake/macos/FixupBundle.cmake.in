@@ -1,0 +1,9 @@
+set(bundle "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/OpenXW.app")
+
+if(NOT IS_DIRECTORY "${bundle}")
+    message(FATAL_ERROR "OpenXW application bundle was not installed: ${bundle}")
+endif()
+
+include(BundleUtilities)
+set(BU_CHMOD_BUNDLE_ITEMS TRUE)
+fixup_bundle("${bundle}" "" "@XW_MACOS_DEPENDENCY_DIRS@")

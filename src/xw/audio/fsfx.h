@@ -1,0 +1,168 @@
+#ifndef XW_AUDIO_FSFX_H
+#define XW_AUDIO_FSFX_H
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#include <stddef.h>
+#include <stdint.h>
+
+typedef struct FlightSoundName FlightSoundName;
+
+enum {
+	FSFX_TRANSFORM_CLAMP_LIMIT = 0x40000000,
+	FSFX_TRANSFORM_CLAMP_MAX = 0x3FFFFFFF,
+	FSFX_TRANSFORM_CLAMP_MIN = -0x3FFF0000,
+	FSFX_PAN_ANGLE_SHIFT = 7,
+	FSFX_PAN_CENTER = 64,
+	FSFX_PAN_MIN_OFFSET = -64,
+	FSFX_PAN_MAX_OFFSET = 63,
+	FSFX_REAR_FACTOR_SHIFT = 8,
+	FSFX_REAR_FACTOR_DIVISOR = 64,
+	FSFX_REAR_VOLUME_DIVISOR = 128
+};
+
+enum {
+	FSFX_FRIENDLY_REPAIR_SLOT = 37,
+	FSFX_FRIENDLY_DEPARTURE_SLOT = 37,
+	FSFX_OTHER_REPAIR_SLOT = 38,
+	FSFX_REPAIR_VOICE_SLOT = 73,
+	FSFX_UNPOSITIONED_OBJECT = 0xFFFF,
+	FSFX_CRAFT_RESTRICTED_FIRST_SLOT = 37,
+	FSFX_CRAFT_RESTRICTED_LAST_SLOT = 40,
+	FSFX_NO_DUPLICATE_SLOT = 41,
+	FSFX_TIE_FLYBY_SLOT = FSFX_NO_DUPLICATE_SLOT,
+	FSFX_TIE_FLYBY_RANGE = 1024,
+	FSFX_OBJECT_EXPLOSION_SLOT = 15,
+	FSFX_ASTEROID_IMPACT_SLOT = 17,
+	FSFX_CRITICAL_HULL_WARNING_SLOT = 22,
+	FSFX_HYPERSPACE_DEPARTURE_SLOT = 24,
+	FSFX_HYPERSPACE_EXTERNAL_SLOT = 25,
+	FSFX_HYPERSPACE_RETURN_SLOT = 26,
+	FSFX_HYPERSPACE_BLOCKED_SLOT = 38,
+	FSFX_SFOIL_MOVEMENT_SLOT = 27,
+	FSFX_SFOIL_FINISHED_SLOT = 28,
+	FSFX_CONTROL_ACKNOWLEDGE_SLOT = 29,
+	FSFX_THROTTLE_SETTING_SLOT = 30,
+	FSFX_TARGET_SELECTED_SLOT = 33,
+	FSFX_ACQUIRING_TONE_SLOT = 34,
+	FSFX_LOCKED_TONE_SLOT = 35,
+	FSFX_TONE_OFF = 0,
+	FSFX_TONE_IDLE = 1,
+	FSFX_TONE_LOCKED = 3,
+	FSFX_ENGINE_XWING_SLOT = 76,
+	FSFX_ENGINE_AWING_SLOT = 77,
+	FSFX_ENGINE_YWING_SLOT = 78,
+	FSFX_ENGINE_NO_SOUND = -1,
+	FSFX_ENGINE_XWING_BASE_HZ = 11000,
+	FSFX_ENGINE_BASE_HZ = 5500,
+	FSFX_ENGINE_VOLUME_MAX = 96,
+	FSFX_ENGINE_VOLUME_SCALE = 15,
+	FSFX_ENGINE_THROTTLE_PERCENT_DIVISOR = 655,
+	FSFX_ENGINE_HZ_PER_PERCENT = 55,
+	FSFX_OVERLAP_FIRST_SLOT = 12,
+	FSFX_OVERLAP_LAST_SLOT = 15,
+	FSFX_POSITIONAL_MAX_PRIORITY = 125,
+	FSFX_PLAYER_PRIORITY = 126
+};
+
+enum { FSFX_BLAST_RESOURCE_TAG = 0x424C4153 };
+
+enum { FSFX_NAME_COUNT = 80, FSFX_FIRST_PLAYABLE_SLOT = 4, FSFX_LAST_PLAYABLE_SLOT = 78 };
+
+enum {
+	FSFX_POSITIONAL_SLOT_COUNT = 42,
+	FSFX_RANGE_TABLE_COUNT = 44,
+	FSFX_VOLUME_TABLE_COUNT = 43,
+	FSFX_DEFAULT_VOLUME = 112,
+	FSFX_DEFAULT_RANGE = 0x2000,
+	FSFX_MAX_VOLUME = 127,
+	FSFX_FAR_DISTANCE_SHIFT = 2,
+	FSFX_MIDDLE_DISTANCE_SHIFT = 1,
+	FSFX_FAR_VOLUME_SHIFT = 3,
+	FSFX_MIDDLE_VOLUME_SHIFT = 2,
+	FSFX_NEAR_RANGE_SHIFT = 5
+};
+
+enum {
+	FSFX_VOICE_QUEUE_CAPACITY = 16,
+	FSFX_SOUND_HANDLE_COUNT = FSFX_LAST_PLAYABLE_SLOT + 1,
+	FSFX_NO_VOICE_SLOT = 0,
+	FSFX_KILL_VOICE_SLOT = 61,
+	FSFX_ACKNOWLEDGE_VOICE_SLOT = 46,
+	FSFX_AID_VOICE_SLOT = 47,
+	FSFX_AID_ALTERNATE_VOICE_SLOT = 48,
+	FSFX_WAITING_ORDERS_VOICE_SLOT = 50,
+	FSFX_PROCEEDING_VOICE_SLOT = 51,
+	FSFX_DESIGNATED_TARGET_VOICE_SLOT = 52,
+	FSFX_IGNORE_TARGET_VOICE_SLOT = 53,
+	FSFX_VOICE_QUEUE_PRIORITY = 5,
+	FSFX_VOICE_PLAYBACK_PRIORITY = 127,
+	FSFX_VOICE_REMAP_SLOT_1 = 42,
+	FSFX_VOICE_REMAP_SLOT_2 = 43,
+	FSFX_VOICE_LEADER_SLOT_OFFSET = 2
+};
+
+/* Original IDB size: 24 bytes. */
+struct FlightSoundName {
+	/* IDB +0x0 */
+	char name[24];
+};
+
+extern uint16_t g_sfxAttenuationRangeBySlot[FSFX_RANGE_TABLE_COUNT];
+extern const uint8_t g_sfxFullVolumeBySlot[FSFX_VOLUME_TABLE_COUNT];
+extern int g_playerEngineLoopObjectType;
+extern uint8_t g_playerEngineLoopSuppressed;
+extern uint8_t g_flightSfxEnabled;
+extern uint8_t g_flightVoiceEnabled;
+extern uint8_t g_fsfxVoiceQueueCount;
+extern uint8_t g_fsfxLoaded;
+extern uint8_t g_fsfxVoiceQueueSfxSlot[FSFX_VOICE_QUEUE_CAPACITY];
+extern FlightSoundName g_fsfxSfxNameTable[FSFX_NAME_COUNT];
+extern uint16_t g_fsfxLoadedSoundHandles[FSFX_SOUND_HANDLE_COUNT];
+extern uint8_t g_fsfxCurrentVoiceSfxSlot;
+
+/* Declarations follow ascending original IDB address. */
+
+/* 0x40C3C0 */
+void j_Sound_UnloadAllEffects(void);
+
+/* 0x40C3D0 */
+uint16_t fsfx_loadsfx(const char* archivePath, uint32_t legacyResourceTag);
+
+/* 0x40C5B0 */
+int16_t fsfx_triggersfx(uint16_t soundId, uint16_t objectIndex);
+
+/* 0x40C710 */
+int16_t fsfx_triggerlasersfx(uint16_t projectileObjectIndex);
+
+/* 0x40C780 */
+int16_t fsfx_calcvolume(uint16_t object_idx, uint16_t sound_id);
+
+/* 0x40C8D0 */
+int16_t fsfx_calcpan(uint16_t objectIndex, uint16_t* volume);
+
+/* 0x40CAF0 */
+void fsfx_triggergunsightsfx(uint16_t toneState);
+
+/* 0x40CBE0 */
+int16_t fsfx_triggervoicesfx(uint16_t sfxSlot);
+
+/* 0x40CCD0 */
+void fsfx_checkblastqueue(void);
+
+/* 0x40CDB0 */
+void fsfx_checktieflyby(void);
+
+/* 0x40CE40 */
+int16_t fsfx_speakeravailable(void);
+
+/* 0x40CEC0 */
+void fsfx_UpdatePlayerEngineLoop(void);
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif

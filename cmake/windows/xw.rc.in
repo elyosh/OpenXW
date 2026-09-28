@@ -1,0 +1,30 @@
+#include <winver.h>
+
+IDI_ICON1 ICON "@XW_WINDOWS_ICON@"
+
+VS_VERSION_INFO VERSIONINFO
+FILEVERSION     @XW_VERSION_MAJOR@,@XW_VERSION_MINOR@,@XW_VERSION_PATCH@,0
+PRODUCTVERSION  @XW_VERSION_MAJOR@,@XW_VERSION_MINOR@,@XW_VERSION_PATCH@,0
+FILEFLAGSMASK   VS_FFI_FILEFLAGSMASK
+FILEFLAGS       0
+FILEOS          VOS_NT_WINDOWS32
+FILETYPE        VFT_APP
+FILESUBTYPE     VFT2_UNKNOWN
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904B0"
+        BEGIN
+            VALUE "FileDescription", "OpenXW"
+            VALUE "FileVersion", "@XW_VERSION@"
+            VALUE "InternalName", "OpenXW"
+            VALUE "OriginalFilename", "OpenXW.exe"
+            VALUE "ProductName", "OpenXW"
+            VALUE "ProductVersion", "@XW_VERSION@"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1200
+    END
+END

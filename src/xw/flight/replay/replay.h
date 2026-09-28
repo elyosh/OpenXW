@@ -1,0 +1,249 @@
+#ifndef XW_FLIGHT_REPLAY_REPLAY_H
+#define XW_FLIGHT_REPLAY_REPLAY_H
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#include "xw/assets/file.h"
+#include "xw/render/flight_view.h"
+#include <stddef.h>
+#include <stdint.h>
+#include <xw/flight/hud/msg.h>
+
+enum { REPLAY_MISSION_ANGLE_SHIFT = 8, REPLAY_FREE_CAMERA_ACTIVE = 1 };
+
+enum {
+	REPLAY_DEFAULT_ZOOM = 1280,
+	REPLAY_STATUS_INVALID = UINT16_MAX,
+	REPLAY_PROGRESS_FONT_TIER = 2,
+	REPLAY_PROGRESS_FULL = 100,
+	REPLAY_PROGRESS_MAXIMUM = 99,
+	REPLAY_PROGRESS_DIGITS = 2,
+	REPLAY_FLIGHT_PROGRESS_LEFT = 310,
+	REPLAY_FLIGHT_PROGRESS_TOP = 14,
+	REPLAY_FLIGHT_PROGRESS_RIGHT = 329,
+	REPLAY_FLIGHT_PROGRESS_BOTTOM = 25,
+	REPLAY_FLIGHT_PROGRESS_CURSOR_X = 312,
+	REPLAY_STANDALONE_PROGRESS_LEFT = 232,
+	REPLAY_STANDALONE_PROGRESS_TOP = 360,
+	REPLAY_STANDALONE_PROGRESS_RIGHT = 251,
+	REPLAY_STANDALONE_PROGRESS_BOTTOM = 373,
+	REPLAY_STANDALONE_PROGRESS_CURSOR_X = 234,
+	REPLAY_LOW_MESSAGE_TOP = 190,
+	REPLAY_HIGH_MESSAGE_TOP = 457
+};
+
+enum {
+	REPLAY_MESSAGE_DURATION_TICKS = 944,
+	REPLAY_LEVEL_SECTION_CAPACITY = 20,
+	REPLAY_PROGRESS_INVALID = -1,
+	REPLAY_CLIP_NAME_CAPACITY = 9,
+	REPLAY_CLIP_PATH_CAPACITY = 16,
+	REPLAY_SAVE_TEXT_CAPACITY = 32,
+	REPLAY_SAVE_LOW_RESOLUTION_MODE = 0x13,
+	REPLAY_SAVE_LOW_LEFT = 70,
+	REPLAY_SAVE_LOW_TOP = 191,
+	REPLAY_SAVE_HIGH_LEFT = 126,
+	REPLAY_SAVE_HIGH_TOP = 456,
+	REPLAY_SAVE_BACKGROUND_COLOR = 0x19,
+	REPLAY_HEADER_BYTE_BITS = 8,
+	REPLAY_LEGACY_INPUT_RECORD_SIZE = 8,
+#ifdef XW_MODERN
+	REPLAY_INPUT_RECORD_SIZE = 13,
+	REPLAY_BUFFER_CAPACITY = 1024 * REPLAY_INPUT_RECORD_SIZE,
+#else
+	REPLAY_BUFFER_CAPACITY = 8192,
+	REPLAY_INPUT_RECORD_SIZE = REPLAY_LEGACY_INPUT_RECORD_SIZE,
+#endif
+	REPLAY_INPUT_BYTE_SHIFT = 8,
+	REPLAY_INPUT_ELAPSED_OFFSET = 7,
+	REPLAY_REFILL_RECORD_COUNT = REPLAY_BUFFER_CAPACITY / REPLAY_INPUT_RECORD_SIZE - 1,
+	REPLAY_CLIP_NAME_BACKGROUND_COLOR = 0x40,
+	REPLAY_CLIP_NAME_TEXT_COLOR = 0x49,
+	REPLAY_FLIGHT_CLIP_NAME_LEFT = 338,
+	REPLAY_FLIGHT_CLIP_NAME_TOP = 14,
+	REPLAY_FLIGHT_CLIP_NAME_RIGHT = 411,
+	REPLAY_FLIGHT_CLIP_NAME_BOTTOM = 25,
+	REPLAY_STANDALONE_CLIP_NAME_LEFT = 262,
+	REPLAY_STANDALONE_CLIP_NAME_TOP = 360,
+	REPLAY_STANDALONE_CLIP_NAME_RIGHT = 337,
+	REPLAY_STANDALONE_CLIP_NAME_BOTTOM = 373
+};
+
+enum {
+	REPLAY_STATUS_NORMAL = 0,
+	REPLAY_STATUS_STOPPED = 1,
+	REPLAY_STATUS_DISABLED = 2,
+	REPLAY_STATUS_CAPTURED = 3,
+	REPLAY_STATUS_WARHEAD_IDLE = 4,
+	REPLAY_STATUS_WARHEAD_HOMING = 5,
+	REPLAY_STATUS_SHIELDS_DOWN = 6,
+	REPLAY_STATUS_HULL_DAMAGED = 7
+};
+
+enum {
+	REPLAY_BUTTON_REWIND_IDLE = 0,
+	REPLAY_BUTTON_REWIND = 1,
+	REPLAY_BUTTON_STOP = 2,
+	REPLAY_BUTTON_PLAY = 3,
+	REPLAY_BUTTON_ADVANCE_OFF = 4,
+	REPLAY_BUTTON_ADVANCE_ON = 5,
+	REPLAY_BUTTON_SAVE = 7,
+	REPLAY_BUTTON_EXIT = 9,
+	REPLAY_BUTTON_FOLLOW = 10,
+	REPLAY_BUTTON_FREE = 11,
+	REPLAY_BUTTON_TRACKING_OFF = 12,
+	REPLAY_BUTTON_TRACKING_ON = 13,
+	REPLAY_BUTTON_LOAD = 25,
+	REPLAY_BUTTON_REENTER = 37
+};
+
+enum {
+	REPLAY_KEY_ESCAPE = 27,
+	REPLAY_TARGET_SELECTION_PLAYER_REF = 0xfffe,
+	REPLAY_ADVANCE_TICKS = 236,
+	REPLAY_EXIT_LOAD = 14,
+	REPLAY_EXIT_FILM = 15,
+	REPLAY_EXIT_TO_MENU = 16,
+	REPLAY_MOUSE_BUTTON_MASK = 15,
+	REPLAY_MOUSE_FORWARD = 1,
+	REPLAY_MOUSE_BACKWARD = 2,
+	REPLAY_MOVE_INITIAL = 64,
+	REPLAY_MOVE_ACCELERATION = 128,
+	REPLAY_MOVE_MAX = 24576,
+	REPLAY_ZOOM_MAX = 5120,
+	REPLAY_WORLD_LIMIT = 0x1000000
+};
+
+extern uint8_t g_ReplayFastForward;
+extern int16_t g_ReplayFastForwardTimer;
+extern uint8_t g_ReplayReturnToExistingCheckpoint;
+extern uint8_t g_ReplayExitRequested;
+
+enum {
+	REPLAY_BUTTON_BANK_SIZE = 18,
+	REPLAY_BUTTON_COUNT = 36,
+	REPLAY_BUTTON_SPRITE_BASE = 111,
+	REPLAY_STATUS_STRING_COUNT = 11,
+	REPLAY_STATUS_STRING_SIZE = 9,
+	REPLAY_PANEL_BACKGROUND_COLOR = 64,
+	REPLAY_PANEL_STATUS_COLOR = 71,
+	REPLAY_PANEL_NAME_LEFT = 256,
+	REPLAY_PANEL_NAME_RIGHT = 400,
+	REPLAY_PANEL_STATUS_LEFT = 461,
+	REPLAY_PANEL_STATUS_RIGHT = 533,
+	REPLAY_ALT_PANEL_NAME_LEFT = 280,
+	REPLAY_ALT_PANEL_NAME_RIGHT = 420,
+	REPLAY_ALT_PANEL_STATUS_LEFT = 485,
+	REPLAY_ALT_PANEL_STATUS_RIGHT = 554,
+	REPLAY_TRACKED_TOP = 435,
+	REPLAY_TRACKED_BOTTOM = 448,
+	REPLAY_ALT_TRACKED_BOTTOM = 447,
+	REPLAY_CHASE_TOP = 402,
+	REPLAY_ALT_CHASE_TOP = 401,
+	REPLAY_CHASE_BOTTOM = 414,
+	REPLAY_BUTTON_TRACKED_CLEAR = 14,
+	REPLAY_BUTTON_ALT_TRACKED_CLEAR = 32,
+	REPLAY_BUTTON_TRACKED_SHOW = 15,
+	REPLAY_BUTTON_ALT_TRACKED_SHOW = 33,
+	REPLAY_BUTTON_CHASE_CLEAR = 16,
+	REPLAY_BUTTON_ALT_CHASE_CLEAR = 34,
+	REPLAY_BUTTON_CHASE_SHOW = 17,
+	REPLAY_BUTTON_ALT_CHASE_SHOW = 35
+};
+
+enum { REPLAY_EDIT_CARET_COLOR = 0x43, REPLAY_EDIT_DELETE_ACTION = 164, REPLAY_EDIT_REJECTED_KEY = 1 };
+
+enum {
+	REPLAY_TYPE_COLOR_IFF0 = 0x46,
+	REPLAY_TYPE_COLOR_IFF1 = 0x44,
+	REPLAY_TYPE_COLOR_OTHER = 0x42,
+	REPLAY_NAME_COLOR_IFF0 = 0x45,
+	REPLAY_NAME_COLOR_IFF1 = 0x43,
+	REPLAY_NAME_COLOR_OTHER = 0x41,
+	REPLAY_STATIC_NAME_COLOR = 0x49
+};
+
+enum { REPLAY_NORMAL_CLEARANCE_HALF_EXTENTS = 2, REPLAY_CAPITAL_CLEARANCE_HALF_EXTENTS = 4 };
+
+extern char g_ReplayStatusStrings[REPLAY_STATUS_STRING_COUNT][REPLAY_STATUS_STRING_SIZE];
+extern uint16_t g_replayButtonY[REPLAY_BUTTON_COUNT];
+extern uint16_t g_replayButtonX[REPLAY_BUTTON_COUNT];
+extern uint8_t g_ReplayMusicActive;
+extern char g_ReplayStartFilename[11];
+extern uint16_t g_ReplayRandomSeed;
+
+extern char g_ReplayClipName[REPLAY_CLIP_NAME_CAPACITY];
+extern XwFlightCamera g_replayCamera;
+extern uint8_t g_ReplayPlaybackActive;
+extern uint8_t* g_ReplayInputPointer;
+extern unsigned int g_ReplayFrameCount;
+extern unsigned int g_ReplayCapacityFrames;
+extern uint8_t* g_ReplayBufferStart;
+extern unsigned int g_ReplayPlaybackFrameIndex;
+extern uint16_t g_replayviewmode;
+extern unsigned int g_ReplayBufferIndex;
+extern int16_t g_ReplayRecordedFlightAvailable;
+extern uint16_t g_ReplayRecording;
+extern int16_t g_ReplayMessageTimer;
+extern uint16_t g_trackobject;
+extern uint16_t g_replayChaseObjectType;
+extern uint8_t g_ReplayReenterSimulation;
+extern uint8_t g_ReplayChaseStatusVisible;
+extern uint16_t g_replayTrackedObjectType;
+extern int16_t g_ReplaySavedVolume;
+
+/* Declarations follow ascending original IDB address. */
+
+/* 0x41C820 */
+int replay_loadreplayinput(void);
+
+/* 0x41C900 */
+XwFlightMessageId replay_savereplay(void);
+
+/* 0x41CD00 */
+int16_t replay_copybytesinfile(unsigned int count, XwFile* source, XwFile* destination);
+
+/* 0x41CD80 */
+int16_t replay_loadreplay(void);
+
+/* 0x41D0A0 */
+void replay_rewindreplay(void);
+
+/* 0x41D1C0 */
+void replay_drawreplaybutton(uint16_t buttonIndex);
+
+/* 0x41D7B0 */
+void replay_outputobjectname(uint16_t objectRef);
+
+/* 0x41D9A0 */
+/* Static mission references must identify non-craft, non-warhead objects. */
+int replay_getstatusnum(uint16_t objectRef);
+
+/* 0x41DA80 */
+void replay_outputclipname(void);
+
+/* 0x41DB00 */
+void replay_doreplayscreen(void);
+
+/* 0x41DF70 */
+void replay_replayinput(void);
+
+/* 0x41E6A0 */
+void replay_calcreplayview(void);
+
+/* 0x41E980 */
+void replay_movecambehind(uint16_t objectRef);
+
+/* 0x41EB20 */
+void replay_replaymessage(XwFlightMessageId messageId);
+
+/* 0x41EBC0 */
+void replay_editstring(int16_t x, int16_t y, uint8_t maxLength, char* text, uint8_t backgroundColor);
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif

@@ -1,0 +1,62 @@
+#ifndef XW_FLIGHT_OBJECT_STATIC_H
+#define XW_FLIGHT_OBJECT_STATIC_H
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#include <stddef.h>
+#include <stdint.h>
+
+enum {
+	STATIC_COLLISION_IGNORED_IFF = 1,
+	STATIC_COLLISION_MAX_DISTANCE = 0x20000,
+	STATIC_COLLISION_LARGE_EXTENT = 2800,
+	STATIC_COLLISION_ANGLE_SHIFT = 8,
+	STATIC_COLLISION_MESH_INDEX = 0,
+	STATIC_COLLISION_QUARTER_SHIFT = 2,
+	STATIC_COLLISION_EIGHTH_SHIFT = 3
+};
+
+enum {
+	STATIC_MINE_COOLDOWN = 236,
+	STATIC_MINE_TARGET_RANGE = 0x10000,
+	STATIC_MINE_LEAD_SHIFT = 14,
+	STATIC_MINE_LEAD_RANDOM_MASK = 3,
+	STATIC_MINE_SMALL_TYPE_LIMIT = 76,
+	STATIC_MINE_SMALL_MUZZLE = 150,
+	STATIC_MINE_LARGE_MUZZLE = 170,
+	STATIC_MINE_ARC_EIGHTH = 0x2000,
+	STATIC_MINE_ARC_THREE_EIGHTHS = 0x6000,
+	STATIC_MINE_ARC_FIVE_EIGHTHS = 0xA000,
+	STATIC_MINE_ARC_SEVEN_EIGHTHS = 0xE000,
+	STATIC_MINE_SPEED_THRESHOLD = 188,
+	STATIC_MINE_ACCURACY_BASE = 24063,
+	STATIC_MINE_SPEED_SHIFT = 7,
+	STATIC_MINE_FULL_ACCURACY = 0xFFFF,
+	STATIC_MINE_AIM_ERROR_BIAS = 256,
+	STATIC_MINE_AIM_ERROR_MASK = 0x3FF,
+	STATIC_MINE_PROJECTILE_TYPE = 3,
+	STATIC_MINE_PROJECTILE_FAMILY = 1,
+	STATIC_MINE_PROJECTILE_IFF = 1
+};
+
+/* Declarations follow ascending original IDB address. */
+
+/* 0x425B10 */
+void static_drawstaticobject(int missionObjectIndex);
+
+/* 0x425CA0 */
+int16_t static_laserstaticcollide(uint16_t sourceObjIdx, uint16_t missionObjectIndex);
+
+/* 0x426230 */
+void static_laserhitstatic(uint16_t projectileObjIdx, uint16_t missionObjectIndex);
+
+/* 0x4263D0 */
+void static_updatemineguns(uint16_t missionObjectIndex);
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif

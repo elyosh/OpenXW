@@ -1,0 +1,256 @@
+#ifndef XW_FLIGHT_OBJECT_CREATE_H
+#define XW_FLIGHT_OBJECT_CREATE_H
+
+#include "xw/flight/object/craft.h"
+#include "xw/flight/object/object.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#include <stddef.h>
+#include <stdint.h>
+
+enum {
+	CREATE_AMBIENT_FIRST_SLOT = 108,
+	CREATE_AMBIENT_RECYCLE_DISTANCE = 2048,
+	CREATE_AMBIENT_FIRST_TYPE = 110,
+	CREATE_AMBIENT_TYPE_MASK = 3,
+	CREATE_AMBIENT_OFFSET_MASK = 0x3FF,
+	CREATE_AMBIENT_OFFSET_CENTER = 512,
+	CREATE_AMBIENT_BASIS_SHIFT = 15,
+	CREATE_AMBIENT_FORWARD_SHIFT = 4
+};
+
+enum { XW_OBJECT_SLOT_RANGE_COUNT = 16, XW_OBJECT_SLOT_UNAVAILABLE = 0xFFFF };
+
+enum { XW_CRAFT_OBJECT_COUNT = 28, XW_OBJECT_COUNT = 116 };
+
+enum {
+	CREATE_BACKDROP_CAPACITY = 64,
+	CREATE_BACKDROP_DEFAULT_COUNT = 22,
+	CREATE_BACKDROP_XY_FACE_COUNT = 4,
+	CREATE_BACKDROP_Z_FACE_COUNT = 3,
+	CREATE_BACKDROP_COORD_MASK = 0xE,
+	CREATE_BACKDROP_COORD_MIN = 4,
+	CREATE_BACKDROP_COORD_MAX = 12,
+	CREATE_BACKDROP_COORD_SHIFT = 4,
+	CREATE_BACKDROP_MODEL_ROLL_MASK = 0x1F,
+	CREATE_BACKDROP_MODEL_ROLL_STEP = 3,
+	CREATE_BACKDROP_MODEL_ROLL_SPLIT = 12,
+	CREATE_BACKDROP_MODEL_FIRST = 123,
+	CREATE_BACKDROP_MODEL_ALTERNATE_FIRST = 131
+};
+
+enum {
+	CREATE_COMPONENT_FAMILY = 3,
+	CREATE_COMPONENT_MIN_LIFETIME_SECONDS = 4,
+	CREATE_COMPONENT_LIFETIME_RANDOM_MASK = 7,
+	CREATE_COMPONENT_MESH_ANIMATION_STRIDE = 2
+};
+
+enum {
+	CREATE_DETACH_FIRST_MESH = 1,
+	CREATE_DETACH_BWING_FIRST_MESH = 3,
+	CREATE_DETACH_ROLL_MASK = 0x3FFF,
+	CREATE_DETACH_MIN_ROLL = 0x4000,
+	CREATE_DETACH_YAW_MASK = 0x7FF,
+	CREATE_DETACH_PITCH_MASK = 0xFFF,
+	CREATE_DETACH_MIN_ANGLE_OFFSET = 1024,
+	CREATE_DETACH_HALF_TURN = 0x8000,
+	CREATE_DETACH_LIFETIME_RANDOM_MASK = 1,
+	CREATE_DETACH_MIN_LIFETIME_SECONDS = 1,
+	CREATE_DETACH_STATE = 2
+};
+
+enum {
+	CREATE_EMBER_FAMILY = 5,
+	CREATE_EMBER_FIRST_TYPE = 139,
+	CREATE_EMBER_ANGLE_RANDOM_MASK = 0x7FF,
+	CREATE_EMBER_MIN_ANGLE_OFFSET = 256,
+	CREATE_EMBER_HALF_TURN = 0x8000,
+	CREATE_EMBER_MIN_SPEED_INCREMENT = 50,
+	CREATE_EMBER_SPEED_RANDOM_MASK = 0xFF,
+	CREATE_EMBER_LIFETIME_RANDOM_MASK = 3,
+	CREATE_EMBER_MIN_LIFETIME_SECONDS = 1
+};
+
+enum {
+	CREATE_MISSION_NO_PLAYER = 255,
+	CREATE_MISSION_VARIANT_STATUS = 10,
+	CREATE_MISSION_START_WAYPOINT_4 = 4,
+	CREATE_MISSION_START_WAYPOINT_5 = 5,
+	CREATE_MISSION_RANDOM_HALF = 0x8000,
+	CREATE_MISSION_RANDOM_THIRD = 0x5555,
+	CREATE_MISSION_RANDOM_TWO_THIRDS = 0xAAAA,
+	CREATE_MISSION_LIGHT_DIRECTION = 18000,
+	CREATE_MISSION_BACKDROP_FACE_COUNT = 6,
+	CREATE_MISSION_BACKDROP_FIRST = 114,
+	CREATE_MISSION_BACKDROP_LAST = 122,
+	CREATE_MISSION_BACKDROP_COORD_MASK = 0xF,
+	CREATE_MISSION_STATIC_GOAL_MASK = 0xC,
+	CREATE_MISSION_COURSE_NAME_LIMIT = 127,
+	CREATE_MISSION_COURSE_CHECKPOINTS = 110,
+	CREATE_MISSION_COURSE_LEVEL_SCORE = 10000,
+	CREATE_MISSION_COURSE_TIMER = 202,
+	CREATE_MISSION_STATIC_REPEAT = 0x80,
+	CREATE_MISSION_HALF_TURN = 0x80,
+	CREATE_MISSION_ASTEROID_OFFSET_MASK = 0x1FF,
+	CREATE_MISSION_ASTEROID_RADIUS = 256,
+	CREATE_MISSION_ASTEROID_TYPE_COUNT = 6,
+	CREATE_MISSION_ASTEROID_FIRST = 100,
+	CREATE_MISSION_MINE_PLANE_MASK = 3,
+	CREATE_MISSION_MINE_SPACING = 64,
+	CREATE_MISSION_TRAINING_B_WING = 4,
+	CREATE_MISSION_DEFAULT_MINUTES = 20
+};
+
+enum {
+	CREATE_CRAFT_DAMAGE_EXTENT_LIMIT = 0x2000,
+	CREATE_CRAFT_DAMAGE_EXTENT_SCALE = 4,
+	CREATE_CRAFT_DAMAGE_MAX = 0x7FFF,
+	CREATE_CRAFT_INITIAL_FIELD01 = 3,
+	CREATE_CRAFT_LARGE_FORMATION_SPACING = 4,
+	CREATE_CRAFT_HANGAR_FORMATION_SPACING = 9,
+	CREATE_CRAFT_TURRET_MOUNT = 2,
+	CREATE_CRAFT_BALANCED_POWER = 2,
+	CREATE_CRAFT_NO_WARHEADS = 1,
+	CREATE_CRAFT_HALF_WARHEADS = 2,
+	CREATE_CRAFT_NO_SHIELDS = 3,
+	CREATE_CRAFT_HALF_SHIELDS = 4,
+	CREATE_CRAFT_INITIAL_COMPONENT_STATE = 1,
+	CREATE_CRAFT_MESH_TYPE_22 = 22,
+	CREATE_CRAFT_ISD_COMPONENT_HP = 90,
+	CREATE_CRAFT_CORVETTE_COMPONENT_HP = 80,
+	CREATE_CRAFT_ISD_FIRST_COMPONENT = 6,
+	CREATE_CRAFT_ISD_SECOND_COMPONENT = 7,
+	CREATE_CRAFT_CORVETTE_FIRST_COMPONENT = 0,
+	CREATE_CRAFT_CORVETTE_SECOND_COMPONENT = 2,
+	CREATE_CRAFT_STATIONARY_PLAN = 50,
+	CREATE_CRAFT_HALF_SPEED_PLAN_30 = 30,
+	CREATE_CRAFT_HALF_SPEED_PLAN_31 = 31
+};
+
+enum {
+	CREATE_GROUP_MOTHERSHIP_ARRIVAL = 0,
+	CREATE_GROUP_FACING_WAYPOINT = 1,
+	CREATE_GROUP_LEVEL_PITCH = 0x4000,
+	CREATE_GROUP_HALF_TURN = 0x8000,
+	CREATE_GROUP_HYPERSPACE_STEP = 0xFFFF,
+	CREATE_GROUP_HYPERSPACE_STEPS = 8,
+	CREATE_GROUP_FRIENDLY_ARRIVAL_EVENT = 13,
+	CREATE_GROUP_ENEMY_ARRIVAL_EVENT = 15,
+	CREATE_GROUP_UNMAPPED_MUSIC_EVENT = 0xFFFF
+};
+
+enum {
+	CREATE_TRIGGER_SCAN_SECONDS = 5,
+	CREATE_TRIGGER_HYPERSPACE_DELAY_SECONDS = 15,
+	CREATE_TRIGGER_TARGET_RANGE = 0x8000,
+	CREATE_TRIGGER_DELAY_MINUTES_LIMIT = 20,
+	CREATE_TRIGGER_DELAY_STEP_SECONDS = 6,
+	CREATE_TRIGGER_DELAY_OFFSET_SECONDS = 120
+};
+
+enum {
+	CREATE_MISSION_EXTERNAL_DISTANCE = 1280,
+	CREATE_MISSION_INITIAL_STEP_SCALE = 15,
+	CREATE_MISSION_INITIAL_EXIT_REASON = 3,
+	CREATE_MISSION_SURFACE_EXIT_SECOND = 70,
+	CREATE_MISSION_SURFACE_OBJECT_TYPE = 83,
+	CREATE_MISSION_SURFACE_INITIAL_HEALTH = 125
+};
+
+extern XwObjectSlotRange g_objectSlotRangeByGenus[XW_OBJECT_SLOT_RANGE_COUNT];
+extern uint8_t g_backdropModelTypes[CREATE_BACKDROP_CAPACITY];
+extern uint8_t g_backdropPackedDirections[CREATE_BACKDROP_CAPACITY];
+extern uint16_t g_backdropPositiveYCount;
+extern uint16_t g_backdropNegativeYCount;
+extern uint16_t g_backdropPositiveZCount;
+extern uint16_t g_backdropNegativeZCount;
+extern uint16_t g_backdropPositiveXCount;
+extern uint16_t g_backdropNegativeXCount;
+extern uint8_t g_missionAutoInspectedIff;
+extern uint16_t g_missionLoadInitialSimStepScale;
+extern const int g_debrisObjectSlotStart;
+extern const int g_debrisObjectSlotEnd;
+extern int g_mainObjectSlotEnd;
+extern ObjectRecord g_objectTable[XW_OBJECT_COUNT];
+extern uint16_t g_nextDebrisObjectSlot;
+extern CraftData g_craftTable[XW_CRAFT_OBJECT_COUNT];
+extern int g_resolvedWorldZ;
+extern int g_resolvedWorldY;
+extern int g_resolvedWorldX;
+
+extern uint8_t g_spawnLeaderObjIdx;
+extern uint8_t g_spawnIffOverride;
+extern uint8_t g_spawnFormationSpacing;
+extern uint8_t g_spawnGroupAI;
+extern int16_t g_spawnYaw;
+extern uint8_t g_spawnOutOfHyperspaceFlag;
+extern uint8_t g_spawnStatus;
+extern uint8_t g_spawnFromMothershipFlag;
+extern int16_t g_spawnPitch;
+extern uint16_t g_spawnCraftOrdinal;
+extern XwObjectTypeId g_spawnObjectType;
+extern uint8_t g_spawnObjectKind;
+extern int g_spawnWorldX;
+extern int g_spawnWorldY;
+extern int g_spawnWorldZ;
+extern XwObjectGenus g_spawnGenusId;
+extern uint8_t g_spawnedObjectIff;
+extern uint8_t g_spawnFormation;
+extern uint16_t g_currentFlightGroupIdx;
+
+/* Declarations follow ascending original IDB address. */
+
+/* 0x405530 */
+int16_t create_loadmission(const char* filename);
+
+/* 0x405F30 */
+void create_createhyperin(void);
+
+/* 0x406030 */
+void create_createmission(void);
+
+/* 0x406510 */
+int16_t create_startflightgroup(void);
+
+/* 0x406550 */
+void create_updatefgstatus(void);
+
+/* 0x406990 */
+void create_reinforceflightgroup(void);
+
+/* 0x4069C0 */
+int16_t create_createflightgroup(void);
+
+/* 0x406E80 */
+uint16_t create_createcraft(void);
+
+/* 0x407D10 */
+void create_getworldposition(uint16_t objectOrMissionPointRef, uint16_t flightGroupIndex);
+
+/* 0x407E00 */
+void create_createbackdrop(void);
+
+/* 0x407ED0 */
+void create_blowoffcomponent(uint16_t objectIndex, int16_t detachAll);
+
+/* 0x408080 */
+uint16_t create_createcomponent(uint16_t sourceObjectIndex, char meshIndex);
+
+/* 0x408140 */
+uint16_t create_createember(uint16_t sourceObjectIndex);
+
+/* 0x408290 */
+uint16_t create_findslot(uint16_t genusId);
+
+/* 0x408300 */
+void create_checkdebris(void);
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif

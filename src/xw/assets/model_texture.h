@@ -1,0 +1,50 @@
+#ifndef XW_ASSETS_MODEL_TEXTURE_H
+#define XW_ASSETS_MODEL_TEXTURE_H
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#include <stddef.h>
+#include <stdint.h>
+
+enum {
+	MODEL_TEXTURE_QUALITY_ALPHA_FILTER = 2,
+	MODEL_TEXTURE_SOURCE_RED = 2,
+	MODEL_TEXTURE_SOURCE_GREEN = 1,
+	MODEL_TEXTURE_SOURCE_BLUE = 0,
+	MODEL_TEXTURE_SOURCE_CHANNEL_SHIFT = 3,
+	MODEL_TEXTURE_SHADE_LEVELS = 16,
+	MODEL_TEXTURE_BASE_SHADE = 8,
+	MODEL_TEXTURE_FRACTION_BITS = 8,
+	MODEL_TEXTURE_DARK_SCALE_SHIFT = 4,
+	MODEL_TEXTURE_BRIGHT_SCALE_SHIFT = 3,
+	MODEL_TEXTURE_FIRST_SW_COLOR = 64,
+	MODEL_TEXTURE_PALETTE_COLORS = 256,
+	MODEL_TEXTURE_CHANNEL_MASK = 31,
+	MODEL_TEXTURE_GREEN_SHIFT = 6,
+	MODEL_TEXTURE_RED_SHIFT = 11,
+	MODEL_TEXTURE_DARK_ENERGY_LIMIT = 32,
+	MODEL_TEXTURE_SHADE_DISTANCE_LIMIT = 16,
+	MODEL_TEXTURE_SHADE_COMPARE_END = 7,
+	MODEL_TEXTURE_REPLACEMENT_SHADE = 10,
+	MODEL_TEXTURE_FIRST_TRANSPARENT_ROW = 1,
+	MODEL_TEXTURE_TRANSPARENT_COUNT_ROW = 9
+};
+
+/* Declarations follow ascending original IDB address. */
+
+/* 0x484BC0 */
+int32_t ModelTexture_IsHardwareFormat555(void);
+
+/* 0x484BD0 */
+void ModelTexture_FilterHardwarePalette(uint16_t* palette);
+
+/* 0x488440 */
+void ModelTexture_BuildPalettedShadeTable(uint8_t* dst, const uint8_t* rgb24, int width, int height);
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif
