@@ -90,14 +90,18 @@ void XwHudDraw_Cross(const XwHudDraw* d) {
 		Marker(d, r->cross_x, r->cross_y, true, r->cross_color);
 }
 
-static void TargetLine(const XwHudDraw* d, const XwRenderView* view, float x0, float y0, float x1, float y1,
-					   float depth, const float rgba[4]) {
+static void TargetStrip(const XwHudDraw* d, const XwRenderView* view, float x, float y, float width,
+						float height, float depth, const float rgba[4]) {
 	AeronRectI clip = { 0, 0, (int)d->layout.target_width, (int)d->layout.target_height };
-	if (d->snapshot->target_box.direct_overlay)
-		AeronDrawList_AddLine(d->list, x0, y0, x1, y1, 1, rgba, AERON_BLIT2D_BLEND_PMA, &clip);
-	else
-		AeronDrawList_AddProjectedLine(d->list, x0, y0, depth, x1, y1, depth, view->camera.near_z, 1, rgba,
-									   AERON_BLIT2D_BLEND_PMA, &clip);
+	if (d->snapshot->target_box.direct_overlay) {
+		AeronDrawList_AddFill(d->list, x, y, width, height, rgba, AERON_BLIT2D_BLEND_PMA, &clip);
+		return;
+	}
+	/* Inset endpoints by the cap radius so the projected line fills exactly this strip. */
+	float thickness = fminf(width, height), inset = thickness * .5f;
+	AeronDrawList_AddProjectedLine(d->list, x + inset, y + inset, depth, x + width - inset,
+								   y + height - inset, depth, view->camera.near_z, thickness, rgba,
+								   AERON_BLIT2D_BLEND_PMA, &clip);
 }
 
 void XwHudDraw_Target(const XwHudDraw* d, const XwRenderView* view) {
@@ -105,18 +109,30 @@ void XwHudDraw_Target(const XwHudDraw* d, const XwRenderView* view) {
 	float x, y, depth;
 	if (!view || !box->visible || !XwRenderMath_ProjectWorld(view, box->world_pos, &x, &y, &depth))
 		return;
-	float size = d->snapshot->camera.focal_x * (float)box->extent / depth;
-	size = fminf(fmaxf(size, d->definition->width == 320 ? 4 : 8), d->definition->width * .75f) + 4;
-	float corner = fmaxf(size / 8, 3), rgba[4];
+	const XwSnapCamera* camera = &d->snapshot->camera;
+	float projected = camera->focal_x * (float)box->extent / depth;
+	/* Targeting_DrawObjectBox truncates before padding and centering in classic pixels. */
+	int size =
+		(int)fminf(fmaxf(projected, camera->screen_width == 320 ? 4 : 8), camera->screen_width * .75f) + 4;
+	int corner = size >> 3;
+	if (corner < 3)
+		corner = 3;
+	float rgba[4];
 	XwHudDraw_Color(d, box->color_index, true, rgba);
-	float half_x = size * .5f * view->classic_pixel_scale_x,
-		  half_y = size * .5f * view->classic_pixel_scale_y;
-	float corner_x = corner * view->classic_pixel_scale_x, corner_y = corner * view->classic_pixel_scale_y;
+	float scale_x = view->classic_pixel_scale_x, scale_y = view->classic_pixel_scale_y;
+	x -= (size / 2) * scale_x;
+	y -= (size / 2) * scale_y;
+	bool hardware =
+		!box->direct_overlay && camera->legacy_render_convention == XW_SNAP_CLASSIC_WINDOWS_HARDWARE;
+	/* Hardware strips start at size; software's last pixel is size - 1. */
+	int edge = size - !hardware;
 	for (unsigned i = 0; i < 4; ++i) {
-		float sx = i & 1 ? 1 : -1, sy = i & 2 ? 1 : -1;
-		TargetLine(d, view, x + sx * half_x, y + sy * half_y, x + sx * (half_x - corner_x), y + sy * half_y,
-				   depth, rgba);
-		TargetLine(d, view, x + sx * half_x, y + sy * half_y, x + sx * half_x, y + sy * (half_y - corner_y),
-				   depth, rgba);
+		bool right = (i & 1) != 0, bottom = (i & 2) != 0;
+		/* Hud_DrawBoxOverlayHW extends only the bottom-right horizontal strip by one pixel. */
+		TargetStrip(d, view, x + (right ? size - corner : 0) * scale_x, y + (bottom ? edge : 0) * scale_y,
+					(corner + (hardware && right && bottom)) * scale_x, scale_y, depth, rgba);
+		TargetStrip(d, view, x + (right ? edge : 0) * scale_x,
+					y + (bottom ? size - corner : !hardware) * scale_y, scale_x,
+					(corner - !hardware) * scale_y, depth, rgba);
 	}
 }
