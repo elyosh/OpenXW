@@ -14,6 +14,7 @@ typedef struct XwHudDraw {
 
 void XwHudDraw_Color(const XwHudDraw* draw, unsigned color, bool indexed, float rgba[4]);
 void XwHudDraw_Fill(const XwHudDraw* draw, XwSnapRect rect, XwSnapRect clip, unsigned color, bool indexed);
+bool XwHudDraw_Base(const XwHudDraw* draw);
 bool XwHudDraw_Image(const XwHudDraw* draw, XwHudImageKey key, XwSnapRect rect, XwSnapRect clip,
 					 bool mirrored);
 bool XwHudDraw_Glyph(const XwHudDraw* draw, const XwSnapGlyph* glyph);

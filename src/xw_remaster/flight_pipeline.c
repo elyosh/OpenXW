@@ -211,11 +211,13 @@ int XwFlightPipeline_DrawRetained(AeronCommandBuffer* cmd, AeronRenderTarget* ta
 													   .clear_color = 1,
 													   .clear_color_rgba = { 0, 0, 0, 1 },
 													   .command_buffer = cmd,
-													   .debug_label = "X-Wing flight tonemap" });
+													   .debug_label = "X-Wing flight composition" });
 	if (!pass)
 		return 0;
+	Aeron_GpuDebugPush(cmd, "X-Wing flight tonemap");
 	AeronScenePresentChain_Draw(g_present, pass, g_color, g_sampler, g_bloomTexture, g_intensity, g_width,
 								g_height, 1, (const float[4]) { 1, 1, 1, 1 }, 0);
+	Aeron_GpuDebugPop(cmd);
 	/* Display-authored artwork bypasses world bloom and cinematic color transforms. */
 	XwHudRenderer_Draw(cmd, pass, target);
 	if (g_barsVisible)
@@ -242,8 +244,10 @@ static void Direct(AeronCommandBuffer* cmd, AeronRenderPass* pass, AeronRenderTa
 	AeronRectI full = { 0, 0, width, height };
 	Aeron_SetViewport(pass, &full);
 	Aeron_SetScissor(pass, &full);
+	Aeron_GpuDebugPush(cmd, "X-Wing flight tonemap");
 	AeronScenePresentChain_Draw(g_direct, pass, g_color, g_sampler, g_bloomTexture, g_intensity, width,
 								height, 1, (const float[4]) { 1, 1, 1, 1 }, 0);
+	Aeron_GpuDebugPop(cmd);
 	/* The draw list applies the swapchain's SDR-white scale on HDR displays. */
 	XwHudRenderer_Draw(cmd, pass, target);
 	if (g_barsVisible)

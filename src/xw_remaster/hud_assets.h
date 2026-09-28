@@ -26,6 +26,7 @@ bool XwHudAssets_Prepare(const XwRenderSnapshot* snapshot);
 bool XwHudAssets_Select(const XwRenderSnapshot* snapshot);
 const XwHudImage* XwHudAssets_Image(XwHudImageKey key);
 const AeronRuntimeAtlas* XwHudAssets_Atlas(const XwHudImage* image);
+const AeronImageCoverage* XwHudAssets_BaseCoverage(void);
 uint64_t XwHudAssets_Generation(void);
 /* Loaded artwork keeps its filter until its original resources retire. */
 bool XwHudAssets_UnditherPending(int requested);

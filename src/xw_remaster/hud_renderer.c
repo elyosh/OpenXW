@@ -106,13 +106,7 @@ bool XwHudRenderer_Prepare(const XwRenderSnapshot* snapshot, const XwRenderView*
 		draw.list = markers;
 	XwHudDraw_Target(&draw, view);
 	draw.list = list;
-	XwSnapRect full = { 0, 0, c->screen_width, c->screen_height };
-	if (draw.definition->base &&
-		!XwHudDraw_Image(&draw,
-						 (XwHudImageKey) { .source = draw.definition->base, .kind = XW_HUD_IMAGE_BASE }, full,
-						 full, c->mirrored))
-		return false;
-	if (!XwHudDraw_Instruments(&draw) || !Panes(&draw))
+	if (!XwHudDraw_Base(&draw) || !XwHudDraw_Instruments(&draw) || !Panes(&draw))
 		return false;
 	XwHudDraw_Cross(&draw);
 	AeronCommandBuffer* cmd = Aeron_AcquireCommandBuffer();
@@ -154,13 +148,19 @@ bool XwHudRenderer_PrepareWorldMarkers(AeronCommandBuffer* cmd, const XwRenderSn
 
 void XwHudRenderer_DrawWorldMarkers(AeronCommandBuffer* cmd, AeronRenderPass* pass,
 									AeronRenderTarget* target) {
-	if (ready)
+	if (ready) {
+		Aeron_GpuDebugPush(cmd, "X-Wing HUD world markers");
 		AeronDrawList_RenderIntoPass(markers, cmd, pass, target);
+		Aeron_GpuDebugPop(cmd);
+	}
 }
 
 void XwHudRenderer_Draw(AeronCommandBuffer* cmd, AeronRenderPass* pass, AeronRenderTarget* target) {
-	if (ready)
+	if (ready) {
+		Aeron_GpuDebugPush(cmd, "X-Wing HUD");
 		AeronDrawList_RenderIntoPass(list, cmd, pass, target);
+		Aeron_GpuDebugPop(cmd);
+	}
 }
 
 void XwHudRenderer_Shutdown(void) {

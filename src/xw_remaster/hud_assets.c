@@ -19,6 +19,7 @@ typedef struct HudVariant {
 
 typedef struct HudBase {
 	XwHudImage image;
+	AeronImageCoverage coverage;
 	XwSnapRect aperture;
 	bool used[256];
 	HudVariant prepared;
@@ -69,6 +70,7 @@ static void Release(HudGroup* group) {
 		ReleaseImage(&group->images[i]);
 	for (unsigned i = 0; i < group->base_count; ++i) {
 		ReleaseImage(&group->bases[i].image);
+		Aeron_ImageFreeCoverage(&group->bases[i].coverage);
 		Aeron_RuntimeAtlasRelease(&group->bases[i].prepared.atlas);
 	}
 	for (unsigned i = 0; i < VIEW_CAPACITY; ++i)
@@ -166,14 +168,19 @@ static bool Requests(HudGroup* group, const XwCockpitDefinition* d, const XwSnap
 }
 
 static bool Upload(AeronCommandBuffer** cmd, HudVariant* variant, const XwHudImage* images, unsigned count,
-				   const uint32_t colors[256], bool filter) {
+				   const uint32_t colors[256], bool filter, AeronImageCoverage* coverage) {
 	if (!*cmd)
 		*cmd = Aeron_AcquireCommandBuffer();
 	if (!*cmd)
 		return false;
 	AeronRuntimeAtlas next = { 0 };
-	if (!XwHudAssetUpload(*cmd, images, count, colors, filter, &next))
+	AeronImageCoverage next_coverage = { 0 };
+	if (!XwHudAssetUpload(*cmd, images, count, colors, filter, &next, coverage ? &next_coverage : NULL))
 		return false;
+	if (coverage) {
+		Aeron_ImageFreeCoverage(coverage);
+		*coverage = next_coverage;
+	}
 	Aeron_RuntimeAtlasRelease(&variant->atlas);
 	variant->atlas = next;
 	memcpy(variant->palette, colors, sizeof variant->palette);
@@ -197,7 +204,7 @@ static bool PrepareParts(AeronCommandBuffer** cmd, HudGroup* group, const uint32
 		   !PaletteMatches(&group->parts[index], colors, group->used, group->filter))
 		++index;
 	/* The final slot handles live DAC/palette changes without unbounded color variants. */
-	return Upload(cmd, &group->parts[index], group->images, group->count, colors, group->filter);
+	return Upload(cmd, &group->parts[index], group->images, group->count, colors, group->filter, NULL);
 }
 
 static HudBase* FindBase(HudGroup* group, XwRenderAssetId source, XwSnapRect aperture) {
@@ -223,7 +230,7 @@ static bool PrepareBase(AeronCommandBuffer** cmd, HudGroup* group, const XwCockp
 			return false;
 	}
 	return PaletteMatches(&base->prepared, colors, base->used, group->filter) ||
-		   Upload(cmd, &base->prepared, &base->image, 1, colors, group->filter);
+		   Upload(cmd, &base->prepared, &base->image, 1, colors, group->filter, &base->coverage);
 }
 
 static bool PrepareFamily(AeronCommandBuffer** cmd, HudGroup* group, const XwCockpitDefinition* d) {
@@ -367,6 +374,10 @@ const AeronRuntimeAtlas* XwHudAssets_Atlas(const XwHudImage* image) {
 			   ? (current_base ? &current_base->prepared.atlas : NULL)
 		   : current_parts ? &current_parts->atlas
 						   : NULL;
+}
+
+const AeronImageCoverage* XwHudAssets_BaseCoverage(void) {
+	return current_base ? &current_base->coverage : NULL;
 }
 
 uint64_t XwHudAssets_Generation(void) { return generation; }
