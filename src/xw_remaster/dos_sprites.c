@@ -62,7 +62,8 @@ static AeronGraphicsPipeline* Pipeline(AeronSampleCount msaa, bool sky) {
 		.color_target_count = 1,
 		.sample_count = msaa,
 		.depth_format = AERON_TEXTURE_FORMAT_D32_FLOAT,
-		.depth = { .depth_test = 1, .depth_write = !sky, .compare = AERON_COMPARE_GREATER_EQUAL } });
+		/* Effects are sorted back to front and test only against scene geometry. */
+		.depth = { .depth_test = 1, .depth_write = 0, .compare = AERON_COMPARE_GREATER_EQUAL } });
 }
 
 bool XwDosSprites_Begin(AeronSampleCount msaa) {
@@ -168,10 +169,14 @@ static bool AddEffect(const XwRenderSnapshot* s, const XwRenderView* view, unsig
 	SpriteVertex quad[4];
 	float sine = sinf(angle), cosine = cosf(angle), min_x = INFINITY, min_y = INFINITY;
 	float max_x = -INFINITY, max_y = -INFINITY;
+	/* Approximate classic flat-inside-mesh priority: bitmap bounds
+	 * use half-scale world units. Bias only depth, clamping at the near plane. */
+	float near_z = view->camera.near_z;
+	float depth = near_z / fmaxf(near_z, eye[2] - t->max_extent * .5f);
 	for (unsigned i = 0; i < 4; ++i) {
 		bool right = i == 1 || i == 2, bottom = i >= 2;
 		float x = (left + (right ? rect->w : 0)) * scale / 256;
-		/* ROTSCALE rows descend from the authored +Y-up anchor, as in OpenTIE. */
+		/* ROTSCALE rows descend from the authored +Y-up anchor. */
 		float y = (top - (bottom ? rect->h : 0)) * (282.0f / 256) * scale / 256;
 		float px, py;
 		XwRenderMath_LayoutPoint(&layout, .5f, .5f, cx + x * cosine + y * sine,
@@ -181,7 +186,7 @@ static bool AddEffect(const XwRenderSnapshot* s, const XwRenderView* view, unsig
 		min_y = fminf(min_y, py);
 		max_y = fmaxf(max_y, py);
 		quad[i] = (SpriteVertex) { .position = { 2 * px / layout.target_width - 1,
-												 1 - 2 * py / layout.target_height, 1 / eye[2], 1 },
+												 1 - 2 * py / layout.target_height, depth, 1 },
 								   .uv = { (rect->x + (right ? rect->w : 0)) / page->width,
 										   (rect->y + (bottom ? rect->h : 0)) / page->height } };
 	}
