@@ -1,6 +1,7 @@
 #include "xw/flight/object/laser.h"
 
 #ifdef XW_MODERN
+#include "xw_runtime/runtime/flight_math.h"
 #include "xw_runtime/runtime/flight_types.h"
 #include "xw_runtime/timing/flight_timing.h"
 #endif
@@ -583,6 +584,9 @@ uint16_t laser_createprojectile(uint16_t sourceObjectIndex, uint16_t weaponSlotI
 		return XW_OBJECT_SLOT_UNAVAILABLE;
 #endif
 	if (projectileIndex != XW_OBJECT_SLOT_UNAVAILABLE) {
+#ifdef XW_MODERN
+		XwLaserAim aim;
+#endif
 		sourceObject = &g_objectTable[sourceObjectIndex];
 		sourceType = sourceObject->objectType;
 		g_objectTable[projectileIndex].familyId = LASER_PROJECTILE_FAMILY;
@@ -664,6 +668,30 @@ uint16_t laser_createprojectile(uint16_t sourceObjectIndex, uint16_t weaponSlotI
 		g_objectTable[projectileIndex].cachedForwardZ = sourceObject->cachedForwardZ;
 		g_objectTable[projectileIndex].orientMatrixDirty = 0;
 		g_objectTable[projectileIndex].moveVectorDirty = 0;
+#ifdef XW_MODERN
+		if (!XwFlightTypes_IsWarhead(projectileObjectType) &&
+			XwFlightMath_ConvergeLaser(sourceObjectIndex, worldX, worldY, worldZ, &aim)) {
+			ObjectRecord* projectile = &g_objectTable[projectileIndex];
+			projectile->pitch = aim.pitch;
+			projectile->yaw = aim.yaw;
+			projectile->roll = 0;
+			projectile->moveX = aim.moveX;
+			projectile->moveY = aim.moveY;
+			projectile->moveZ = aim.moveZ;
+			projectile->orientMatrixDirty = 1;
+			projectile->moveVectorDirty = 1;
+			/* The initial collision segment must follow the converged shot from its muzzle. */
+			projectile->worldX =
+				(int32_t)((uint32_t)worldX +
+						  (uint32_t)(((int64_t)aim.moveX * launchOffset) >> LASER_LAUNCH_BASIS_SHIFT));
+			projectile->worldY =
+				(int32_t)((uint32_t)worldY +
+						  (uint32_t)(((int64_t)aim.moveY * launchOffset) >> LASER_LAUNCH_BASIS_SHIFT));
+			projectile->worldZ =
+				(int32_t)((uint32_t)worldZ +
+						  (uint32_t)(((int64_t)aim.moveZ * launchOffset) >> LASER_LAUNCH_BASIS_SHIFT));
+		}
+#endif
 		guidanceIndex = (uint16_t)(projectileIndex - XW_CRAFT_OBJECT_COUNT);
 		g_objectTable[projectileIndex].instanceData = &g_warheadGuidanceTable[guidanceIndex];
 		g_warheadGuidanceTable[guidanceIndex].homingTier = 0;

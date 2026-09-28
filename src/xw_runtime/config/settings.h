@@ -35,6 +35,7 @@ typedef struct XwSettings {
 	int sb16_filter_enabled;
 	int player_engine_sound_volume_percent;
 	int starfighter_collision_damage, player_invulnerable, unlimited_ammunition;
+	int laser_convergence;
 	char xw93_data[XW_PATH_CAPACITY], xw94_data[XW_PATH_CAPACITY], xw98_data[XW_PATH_CAPACITY];
 	char ui_font[XW_PATH_CAPACITY];
 	int mouse_flight, mouse_sensitivity, mouse_invert_y;

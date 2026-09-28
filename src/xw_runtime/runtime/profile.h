@@ -35,6 +35,9 @@ XwFlightUpdateRate XwProfile_ActiveFlightRate(void);
 bool XwProfile_HasMission(void);
 bool XwProfile_HasActiveFlight(void);
 bool XwProfile_MissionClassic(void);
+bool XwProfile_MissionLaserConvergence(void);
+/* Pinned for the mission; only validated recording metadata may restore it. */
+bool XwProfile_RestoreMissionLaserConvergence(bool enabled);
 /* Recorded content selection may be restored before activation; an active mission is immutable. */
 bool XwProfile_RestoreMissionContent(bool classic);
 /* Only validated recording metadata may replace the pinned timing policy. */

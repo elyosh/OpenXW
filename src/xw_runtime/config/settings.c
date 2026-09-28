@@ -107,6 +107,7 @@ static const XwSettingField g_fields[] = {
 	SETTING_BOOL("game.starfighter_collision_damage", starfighter_collision_damage),
 	SETTING_BOOL("game.player_invulnerable", player_invulnerable),
 	SETTING_BOOL("game.unlimited_ammunition", unlimited_ammunition),
+	SETTING_BOOL("game.laser_convergence", laser_convergence),
 	SETTING_STRING("music.arrangement", music.arrangement),
 	SETTING_STRING("music.backend", music.backend),
 	SETTING_STRING("music.soundfont", music.soundfont),

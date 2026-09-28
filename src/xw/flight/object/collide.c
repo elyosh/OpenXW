@@ -1070,6 +1070,8 @@ int16_t collide_targetinrange(uint16_t sourceObjectIndex, uint16_t targetObjectR
 	uint16_t craftTypeIndex;
 	int16_t projectileStepDistance;
 #ifdef XW_MODERN
+	XwLaserAim aim;
+
 	if (XwFlightTypes_Dos())
 		predictionSteps = (int16_t)(3 * g_simStepScale);
 	else if (projectileType == XW_OBJ_LASER_143)
@@ -1099,11 +1101,18 @@ int16_t collide_targetinrange(uint16_t sourceObjectIndex, uint16_t targetObjectR
 		(int16_t)math2_mphconvert((int16_t)(projectileSpeed + sourceObject->speed), g_simStepScale);
 	if (sourceObject->moveVectorDirty != 0)
 		fview_calcrotatemove(sourceObject->pitch, sourceObject->yaw, sourceObject);
+#ifdef XW_MODERN
+	aim.moveX = sourceObject->moveX;
+	aim.moveY = sourceObject->moveY;
+	aim.moveZ = sourceObject->moveZ;
+	XwFlightMath_ConvergeLaser(sourceObjectIndex, g_collisionSegmentStartWorldX,
+							   g_collisionSegmentStartWorldY, g_collisionSegmentStartWorldZ, &aim);
+#endif
 	g_collisionProbeWorldX =
 		(int32_t)((uint32_t)g_collisionSegmentStartWorldX +
 				  (uint32_t)predictionSteps *
 #ifdef XW_MODERN
-					  (uint32_t)XwFlightMath_PredictionStep(projectileStepDistance, sourceObject->moveX)
+					  (uint32_t)XwFlightMath_PredictionStep(projectileStepDistance, aim.moveX)
 #else
 					  (uint32_t)((uint64_t)((int64_t)projectileStepDistance * sourceObject->moveX) >>
 								 FVIEW_MATRIX_FRACTION_BITS)
@@ -1113,7 +1122,7 @@ int16_t collide_targetinrange(uint16_t sourceObjectIndex, uint16_t targetObjectR
 		(int32_t)((uint32_t)g_collisionSegmentStartWorldY +
 				  (uint32_t)predictionSteps *
 #ifdef XW_MODERN
-					  (uint32_t)XwFlightMath_PredictionStep(projectileStepDistance, sourceObject->moveY)
+					  (uint32_t)XwFlightMath_PredictionStep(projectileStepDistance, aim.moveY)
 #else
 					  (uint32_t)((uint64_t)((int64_t)projectileStepDistance * sourceObject->moveY) >>
 								 FVIEW_MATRIX_FRACTION_BITS)
@@ -1123,7 +1132,7 @@ int16_t collide_targetinrange(uint16_t sourceObjectIndex, uint16_t targetObjectR
 		(int32_t)((uint32_t)g_collisionSegmentStartWorldZ +
 				  (uint32_t)predictionSteps *
 #ifdef XW_MODERN
-					  (uint32_t)XwFlightMath_PredictionStep(projectileStepDistance, sourceObject->moveZ)
+					  (uint32_t)XwFlightMath_PredictionStep(projectileStepDistance, aim.moveZ)
 #else
 					  (uint32_t)((uint64_t)((int64_t)projectileStepDistance * sourceObject->moveZ) >>
 								 FVIEW_MATRIX_FRACTION_BITS)

@@ -20,6 +20,7 @@ static const XwFlightProfile flight_profiles[] = {
 static const XwFlightProfile* mission;
 static const XwFlightProfile* active;
 static bool missionClassic;
+static bool missionLaserConvergence;
 static XwFlightUpdateRate missionRate;
 
 static const XwFrontendProfile* requested_inflight_frontend(void) {
@@ -107,6 +108,17 @@ bool XwProfile_MissionClassic(void) {
 	return mission ? missionClassic : XwConfig_Settings()->game.preferences.classicMissions != 0;
 }
 
+bool XwProfile_MissionLaserConvergence(void) {
+	return mission ? missionLaserConvergence : XwConfig_Settings()->laser_convergence != 0;
+}
+
+bool XwProfile_RestoreMissionLaserConvergence(bool enabled) {
+	if (!mission)
+		return false;
+	missionLaserConvergence = enabled;
+	return true;
+}
+
 bool XwProfile_DosFlight(void) { return XwGameVersion_IsDos(XwProfile_ActiveFlight()->version); }
 
 bool XwProfile_PinMission(XwGameVersion version, char* error, size_t capacity) {
@@ -136,6 +148,7 @@ bool XwProfile_PinMission(XwGameVersion version, char* error, size_t capacity) {
 	inflightFrontend = menus;
 	mission = profile;
 	missionRate = XwProfile_RequestedFlightRate();
+	missionLaserConvergence = XwConfig_Settings()->laser_convergence != 0;
 	missionClassic =
 		version != XW_GAME_VERSION_93 && XwConfig_Settings()->game.preferences.classicMissions != 0;
 	return true;

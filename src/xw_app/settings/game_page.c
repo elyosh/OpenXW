@@ -87,6 +87,9 @@ void XwGamePage_Draw(AeronUiContext* ui, const AeronInputSnapshot* input) {
 	AeronUi_Selector(ui, "Starfighter Collision Damage", &draft->starfighter_collision_damage, off_on, 2);
 	AeronUi_Selector(ui, "Player Spacecraft", &draft->player_invulnerable, vulnerability, 2);
 	AeronUi_Selector(ui, "Ammunition", &draft->unlimited_ammunition, ammunition, 2);
+	AeronUi_Selector(ui, "Laser Convergence", &draft->laser_convergence, off_on, 2);
+	if (XwProfile_HasMission() && XwProfile_MissionLaserConvergence() != (draft->laser_convergence != 0))
+		AeronUi_Help(ui, "Laser convergence changes apply when you next open mission selection.");
 	XwInstallationPage_Draw(ui, input);
 	AeronUi_EndScroll(ui);
 }

@@ -231,6 +231,9 @@ presentation:
   sdr_gamma: auto
   paper_white_nits: auto
 game:
+  # Player laser and ion cannons converge at the selected target's range.
+  # Applies when next opening mission selection.
+  laser_convergence: false
   starfighter_collision_damage: true
   player_invulnerable: false
   unlimited_ammunition: false

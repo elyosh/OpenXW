@@ -111,7 +111,8 @@ static LandruTaskStepResult shell_flight_step(void* self) {
 		}
 		if (!XwProfile_PinRequestedMission(error, sizeof error) ||
 			!XwProfile_RestoreMissionContent(metadata.classic) ||
-			!XwProfile_RestoreMissionTiming(metadata.update_rate)) {
+			!XwProfile_RestoreMissionTiming(metadata.update_rate) ||
+			!XwProfile_RestoreMissionLaserConvergence(metadata.laser_convergence)) {
 			XwFlightMode_ReportError("The recording uses a different mission content selection.");
 			state->nextScene = film ? XW_SCENE_FILM_ROOM : XW_SCENE_CONCOURSE;
 			state->phase = SHELL_FLIGHT_FRONTEND;

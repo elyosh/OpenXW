@@ -19,6 +19,7 @@ enum {
 	FLAG_CLASSIC = 1,
 	FLAG_LEGACY_STATE = 2,
 	FLAG_UNLOCKED = 4,
+	FLAG_LASER_CONVERGENCE = 8,
 	MAX_INPUT_BYTES = UINT16_MAX * 1024u
 };
 
@@ -90,7 +91,7 @@ static bool decode(const char* path, uint8_t* bytes, size_t size, XwReplayKind k
 		file->recordBytes = REPLAY_INPUT_RECORD_SIZE;
 		if (word(bytes + 4) != FORMAT_VERSION || bytes[6] != kind || word(bytes + 22) != HEADER_SIZE ||
 			word(bytes + 18) != (kind == XW_REPLAY_FILM ? REPLAY_INPUT_RECORD_SIZE : 0) ||
-			(word(bytes + 20) & ~(FLAG_CLASSIC | FLAG_LEGACY_STATE | FLAG_UNLOCKED)))
+			(word(bytes + 20) & ~(FLAG_CLASSIC | FLAG_LEGACY_STATE | FLAG_UNLOCKED | FLAG_LASER_CONVERGENCE)))
 			return fail(path, "unsupported or invalid recording header");
 		switch (bytes[7]) {
 			case 93:
@@ -111,6 +112,8 @@ static bool decode(const char* path, uint8_t* bytes, size_t size, XwReplayKind k
 		file->flags = word(bytes + 20);
 		if ((file->flags & FLAG_LEGACY_STATE) && (file->flags & FLAG_UNLOCKED))
 			return fail(path, "Windows recordings require native timing");
+		if ((file->flags & FLAG_LEGACY_STATE) && (file->flags & FLAG_LASER_CONVERGENCE))
+			return fail(path, "Windows recordings require parallel cannon fire");
 		file->layout = file->flags & FLAG_LEGACY_STATE ? XW_REPLAY_LAYOUT_LEGACY : XW_REPLAY_LAYOUT_CURRENT;
 		file->rate =
 			file->flags & FLAG_UNLOCKED ? XW_FLIGHT_UPDATE_RATE_UNLOCKED : XW_FLIGHT_UPDATE_RATE_NATIVE;
@@ -211,8 +214,9 @@ bool XwReplayFormat_CheckFile(const char* path, XwReplayKind kind, XwGameVersion
 	if (!read_file(path, kind, version, false, &file))
 		return false;
 	if (metadata)
-		*metadata =
-			(XwReplayMetadata) { .classic = (file.flags & FLAG_CLASSIC) != 0, .update_rate = file.rate };
+		*metadata = (XwReplayMetadata) { .classic = (file.flags & FLAG_CLASSIC) != 0,
+										 .laser_convergence = (file.flags & FLAG_LASER_CONVERGENCE) != 0,
+										 .update_rate = file.rate };
 	free(file.allocation);
 	return true;
 }
@@ -224,7 +228,8 @@ bool XwReplayFormat_SaveCheckpoint(const char* path) {
 		.recordBytes = REPLAY_INPUT_RECORD_SIZE,
 		.rate = XwProfile_ActiveFlightRate(),
 		.flags = (XwProfile_MissionClassic() ? FLAG_CLASSIC : 0) |
-				 (XwProfile_ActiveFlightRate() == XW_FLIGHT_UPDATE_RATE_UNLOCKED ? FLAG_UNLOCKED : 0)
+				 (XwProfile_ActiveFlightRate() == XW_FLIGHT_UPDATE_RATE_UNLOCKED ? FLAG_UNLOCKED : 0) |
+				 (XwProfile_MissionLaserConvergence() ? FLAG_LASER_CONVERGENCE : 0)
 	};
 	file.snapshotSize = XwReplaySnapshot_Size(file.version, file.layout);
 	if (!file.snapshotSize)
@@ -251,6 +256,8 @@ bool XwReplayFormat_LoadCheckpoint(const char* path) {
 		return fail(path, "checkpoint uses a different mission content selection");
 	}
 	bool ok = XwReplaySnapshot_Apply(file.snapshot, file.snapshotSize, file.version, file.layout, file.rate);
+	if (ok)
+		ok = XwProfile_RestoreMissionLaserConvergence((file.flags & FLAG_LASER_CONVERGENCE) != 0);
 	free(file.allocation);
 	if (!ok)
 		return fail(path, "cannot restore checkpoint");
