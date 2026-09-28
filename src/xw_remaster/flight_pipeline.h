@@ -11,8 +11,6 @@ int XwFlightPipeline_Resolve(AeronCommandBuffer* cmd, AeronTexture* color, int w
 int XwFlightPipeline_SetDirect(int enabled, int width, int height);
 int XwFlightPipeline_SubmitDirect(void);
 int XwFlightPipeline_Retain(AeronCommandBuffer* cmd);
-/* Resolve the current direct source into an independently owned handoff target. */
-int XwFlightPipeline_DrawRetained(AeronCommandBuffer* cmd, AeronRenderTarget* target);
 int XwFlightPipeline_NeedsRetain(void);
 /* World postprocessing, bloom and tonemapping, then display-authored HUD in retained/direct output. */
 bool XwFlightPipeline_Finish(AeronCommandBuffer* cmd, AeronScene3D* scene, const XwPreparedFlight* frame);

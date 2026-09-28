@@ -255,7 +255,8 @@ void XwPresentation_EndFrame(void) {
 		Dos94Display_Submit();
 	} else if (source == XW_PRESENT_FRONTEND && xsurface_Uses_Native_Vga_Presentation()) {
 		XwLandruLayer_Submit();
-	} else {
+	} else if (source != XW_PRESENT_WINDOWS_FLIGHT || !ModernFlightReady()) {
+		/* Software flight still captures its CPU surfaces; the opaque modern layer covers presentation. */
 		AeronDx5_EndFrame();
 	}
 }

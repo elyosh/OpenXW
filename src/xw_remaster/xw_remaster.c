@@ -70,6 +70,8 @@ void XwRemaster_Frame(int32_t delta_us) {
 	}
 	int width = 0, height = 0;
 	if (!Aeron_GetPresentationPixelSize(&width, &height) || width <= 0 || height <= 0) {
+		if (!XwPresentedFrame_Retain(snapshot))
+			return;
 		XwRemasterFlight_Prepare(snapshot, 0, 0);
 		status.view_prepared = status.hud_prepared = false;
 		status.scene_prepared = false;
@@ -88,18 +90,6 @@ void XwRemaster_Frame(int32_t delta_us) {
 		Aeron_RequestFatalRendererError("modern flight asset preparation");
 		return;
 	}
-	if (!XwHudAssets_Prepare(snapshot))
-		return;
-	if (XwFlightLoading_Active() && !XwFlightLoading_ResourcesReady() && status.assets_prepared) {
-		uint64_t started = Aeron_NowUs();
-		if (!XwFlightScene_PrepareResources(snapshot->flight_version, width, height)) {
-			Aeron_RequestFatalRendererError("flight renderer preparation during loading");
-			return;
-		}
-		XwFlightLoading_SetResourcesReady(true);
-		Aeron_LogDebug("xw.remaster", "Flight renderer prepared in %.1f ms",
-					   (double)(Aeron_NowUs() - started) / 1000.0);
-	}
 	if (!XwRemasterFlight_Prepare(snapshot, width, height)) {
 		Aeron_RequestFatalError("Renderer Error",
 								"The modern flight camera or projection could not be prepared.");
@@ -110,6 +100,28 @@ void XwRemaster_Frame(int32_t delta_us) {
 	if (status.view_prepared) {
 		width = (int)frame->cockpit_layout.target_width;
 		height = (int)frame->cockpit_layout.target_height;
+	}
+	bool render_world =
+		status.assets_prepared && status.view_prepared && snapshot->hud_valid && XwRemasterView_NeedsWorld();
+	bool direct = render_world && XwRemasterView_Direct(snapshot);
+	/* Preserve direct sources before HUD preparation only when no new scene will replace them. */
+	if (render_world)
+		XwPresentedFrame_Discard();
+	else if (!XwPresentedFrame_Retain(snapshot))
+		return;
+	if (!XwHudAssets_Prepare(snapshot))
+		return;
+	if (XwFlightLoading_Active() && !XwFlightLoading_ResourcesReady() && status.assets_prepared) {
+		/* Loading owns the display while renderer targets are recreated. */
+		XwPresentedFrame_Discard();
+		uint64_t started = Aeron_NowUs();
+		if (!XwFlightScene_PrepareResources(snapshot->flight_version, width, height)) {
+			Aeron_RequestFatalRendererError("flight renderer preparation during loading");
+			return;
+		}
+		XwFlightLoading_SetResourcesReady(true);
+		Aeron_LogDebug("xw.remaster", "Flight renderer prepared in %.1f ms",
+					   (double)(Aeron_NowUs() - started) / 1000.0);
 	}
 	status.hud_prepared = XwHudRenderer_Prepare(status.view_prepared ? snapshot : NULL,
 												status.view_prepared ? &frame->view : NULL, width, height);
@@ -122,9 +134,8 @@ void XwRemaster_Frame(int32_t delta_us) {
 	if (XwFlightLoading_Active() && status.view_prepared && status.hud_prepared)
 		XwFlightLoading_ViewCompleted();
 	status.scene_prepared = false;
-	if (status.assets_prepared && status.view_prepared && status.hud_prepared &&
-		XwRemasterView_NeedsWorld()) {
-		status.scene_prepared = XwFlightScene_Frame(snapshot, frame, XwRemasterView_Direct(snapshot));
+	if (render_world) {
+		status.scene_prepared = XwFlightScene_Frame(snapshot, frame, direct);
 		if (!status.scene_prepared) {
 			Aeron_RequestFatalRendererError("modern flight scene preparation");
 			return;

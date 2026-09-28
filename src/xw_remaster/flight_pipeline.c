@@ -203,7 +203,7 @@ int XwFlightPipeline_Resolve(AeronCommandBuffer* cmd, AeronTexture* color, int w
 	return g_directWanted || XwFlightPipeline_Retain(cmd);
 }
 
-int XwFlightPipeline_DrawRetained(AeronCommandBuffer* cmd, AeronRenderTarget* target) {
+static int DrawRetained(AeronCommandBuffer* cmd, AeronRenderTarget* target) {
 	if (!g_color || !target)
 		return 0;
 	AeronRenderPass* pass =
@@ -230,7 +230,7 @@ int XwFlightPipeline_Retain(AeronCommandBuffer* cmd) {
 	if (!g_color || g_retained)
 		return 1;
 	g_valid = false;
-	g_retained = XwFlightPipeline_DrawRetained(cmd, g_target);
+	g_retained = DrawRetained(cmd, g_target);
 	return g_retained;
 }
 
