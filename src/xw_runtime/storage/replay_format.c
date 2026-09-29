@@ -287,7 +287,7 @@ XwFlightMessageId XwReplayFormat_SaveFilm(const char* path, const char* name) {
 		memcpy(bytes + HEADER_SIZE, start.snapshot, start.snapshotSize);
 		uint8_t* input = bytes + HEADER_SIZE + start.snapshotSize;
 		if (g_ReplaySpoolEnabled) {
-			AeronFile* stream = XwStorage_Open("+input.spl", "rb");
+			AeronFile* stream = XwStorage_Open("input.spl", "rb");
 			ok = stream && XwFile_Read(input, 1, inputSize, stream) == inputSize;
 			if (stream && XwFile_Close(stream))
 				ok = false;
@@ -330,7 +330,7 @@ bool XwReplayFormat_LoadFilm(void) {
 	free(bytes);
 	/* Spool offsets remain relative to raw input, independently of the film header. */
 	if (ok && g_ReplaySpoolEnabled)
-		ok = XwStorage_WriteAtomic("+input.spl", film.input, (size_t)film.records * REPLAY_INPUT_RECORD_SIZE);
+		ok = XwStorage_WriteAtomic("input.spl", film.input, (size_t)film.records * REPLAY_INPUT_RECORD_SIZE);
 	if (ok) {
 		g_ReplayFrameCount = film.records;
 		if (!g_ReplaySpoolEnabled) {
@@ -351,7 +351,8 @@ bool XwReplayFormat_RefillInput(void) {
 	if (count > REPLAY_REFILL_RECORD_COUNT)
 		count = REPLAY_REFILL_RECORD_COUNT;
 	uint8_t bytes[REPLAY_BUFFER_CAPACITY] = { 0 };
-	AeronFile* file = XwStorage_Open("+input.spl", "rb");
+	/* Direct storage calls use the filename expanded by the legacy spool writer. */
+	AeronFile* file = XwStorage_Open("input.spl", "rb");
 	bool ok =
 		file && g_ReplayPlaybackFrameIndex <= INT32_MAX / REPLAY_INPUT_RECORD_SIZE &&
 		!XwFile_Seek(file, (int32_t)(g_ReplayPlaybackFrameIndex * REPLAY_INPUT_RECORD_SIZE), SEEK_SET) &&

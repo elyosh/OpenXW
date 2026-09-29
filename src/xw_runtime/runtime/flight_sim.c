@@ -460,6 +460,8 @@ static void sim_prompt_begin(FlightSimState* state) {
 	unsigned int promptLeft, promptRight, promptTop;
 	uint16_t promptBottom;
 
+	/* The classic prompt must replace the retained modern flight view. */
+	XwPresentation_BeginFlightUi();
 	if (g_flightAudioMode != 0) {
 		state->promptMusicVolume = hilevel_ImGetMasterVol();
 		hilevel_ImSetMasterVol(0);
