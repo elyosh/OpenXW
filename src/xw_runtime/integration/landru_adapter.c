@@ -336,7 +336,7 @@ void XwLandru_SetLogicalViewport(int low, int width, int height) {
 	if (xsurface_Has_Surface_Set(set))
 		xsurface_Select_Surface_Set(set);
 	else
-		xbitmap_Set_VGA_Compatibility_Mode(low, width, height);
+		xbm_Set_VGA_Compatibility_Mode(low, width, height);
 	XwPresentation_SetSceneExtent(width, height);
 	Rect bounds;
 	xsurface_Get_Logical_Bounds(&bounds);
