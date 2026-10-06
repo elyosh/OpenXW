@@ -62,7 +62,16 @@ int XwShip_Select(const XwRenderAssetSet* set, const XwSnapObject* object, XwShi
 	*out = (XwShipSelection) { .asset_id = set->types[type].geometry,
 							   .component = component,
 							   .variant = variant };
-	return out->asset_id ? 1 : -1;
+	if (!out->asset_id)
+		return -1;
+	/* collide_damagecraft can detach meshes 1..4 from two-mesh A-Wings;
+	 * the classic root walk draws nothing for a missing mesh. */
+	if (object->type == XW_OBJ_DETACHED_COMPONENT) {
+		const XwMeshAsset* asset = XwRemasterAssets_Mesh(out->asset_id);
+		if (asset && component >= asset->component_count)
+			return 0;
+	}
+	return 1;
 }
 
 bool XwShip_Projectile(const XwSnapObject* object) {
