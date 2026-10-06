@@ -34,6 +34,7 @@
 #include "xw/render/renderer.h"
 #include "xw_runtime/runtime/gate_collision_task.h"
 
+#include <landru/host_timing.h>
 #include <landru/timer.h>
 
 static XwFlightFrame s_frame;

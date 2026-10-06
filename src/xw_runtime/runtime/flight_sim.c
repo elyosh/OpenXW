@@ -64,6 +64,7 @@
 #include "xw_runtime/runtime/presentation.h"
 #include "xw_runtime/timing/flight_timing.h"
 #include "xw_runtime/timing/host_clock.h"
+#include <landru/host_timing.h>
 #include <landru/task.h>
 #include <landru/timer.h>
 #include <stdlib.h>

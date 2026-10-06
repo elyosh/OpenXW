@@ -3,6 +3,7 @@
 #include "xw/flight/flight_display.h"
 #include "xw/landru_config.h"
 #include "xw_runtime/runtime/presentation.h"
+#include <landru/presentation.h>
 #include <landru/surface.h>
 
 static AeronPaletteEntry palette[256];
